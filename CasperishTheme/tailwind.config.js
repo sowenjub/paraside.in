@@ -1,5 +1,8 @@
 module.exports = {
-  purge: [],
+  purge: {
+    enabled: true,
+    content: ['../../Sources/**/Theme*.swift'],
+  },
   theme: {
     extend: {
         colors: {
