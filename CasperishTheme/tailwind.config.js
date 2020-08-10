@@ -7,6 +7,9 @@ module.exports = {
     extend: {
         colors: {
           'casper-blue': '#3eb0ef',
+        },
+        height: {
+          'cover': '75vh',
         }
     },
   },
