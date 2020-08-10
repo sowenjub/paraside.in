@@ -19212,6 +19212,10 @@ video {
   transition-delay: 1000ms;
 }
 
+.prose img {
+  margin: 0 auto;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
