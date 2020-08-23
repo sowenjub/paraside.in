@@ -2700,6 +2700,10 @@ video {
 .highlight .gi { color: #a6e22e;
 } /* Generic.Inserted & Diff Inserted */
 
+.prose pre {
+  overflow-wrap: normal;
+}
+
 .prose img {
   margin: 0 auto;
 }
