@@ -4,6 +4,8 @@
 
 @import "tailwindcss/utilities";
 
+/* Monokai Theme for syntax highlighting */
+
 .highlight pre { background-color: #272822; }
 .highlight .hll { background-color: #272822; }
 .highlight .c { color: #75715e } /* Comment */
@@ -70,10 +72,12 @@
 .highlight .gd { color: #f92672; } /* Generic.Deleted & Diff Deleted */
 .highlight .gi { color: #a6e22e; } /* Generic.Inserted & Diff Inserted */
 
+/* Make sure code can be scrolled horizontally */
 .prose pre {
     overflow-wrap: normal;
 }
 
+/* Center images in prose (markdown) content */
 .prose img {
     margin: 0 auto;
 }
