@@ -1,4 +1,139 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>🏝 Living in Paraside</title><description>Paraside [pɛ.ɹə.saɪd] - A mind archipelago where dreams come true</description><link>https://paraside.in</link><language>en</language><lastBuildDate>Tue, 27 Oct 2020 11:37:48 +0100</lastBuildDate><pubDate>Tue, 27 Oct 2020 11:37:48 +0100</pubDate><ttl>250</ttl><atom:link href="https://paraside.in/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://paraside.in/design+code/trix-stimulus-auto-link-url</guid><title>Auto-linking URLs with Trix Editor and StimulusJS</title><description>Auto-linking URLs with Trix Editor and StimulusJS</description><link>https://paraside.in/design+code/trix-stimulus-auto-link-url</link><pubDate>Tue, 20 Oct 2020 10:25:00 +0200</pubDate><content:encoded><![CDATA[<p>The <a href="https://trix-editor.org/">https://trix-editor.org</a> is fantastic, but there's one simple thing I expected to be built-in that isn't: copy/pasting a URL should create a link automatically instead of inserting the link as plain text.</p><p>Thinking of it, it's not so surprising because there are many things one could want to do instead, like embedding a video or a tweet. But it's a <a href="https://github.com/basecamp/trix/issues/167">common request</a>, and the GitHub issue includes a solution with jQuery that I used to build my Stimulus controller.</p><p>So, without further ado, here's a simple 2 steps rails tutorial to add URL auto-linking to your forms.</p><h1>The controller</h1><p>Create a <code>/app/javascript/controller/trix_paste_controller.js</code> file and copy/paste the code below.</p><pre><code><div class="highlight"><span></span><span class="kd">import</span> <span class="p">{</span> <span class="nc">Controller</span> <span class="p">}</span> <span class="nc">from</span> <span class="s">&quot;stimulus&quot;</span>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>🏝 Living in Paraside</title><description>Paraside [pɛ.ɹə.saɪd] - A mind archipelago where dreams come true</description><link>https://paraside.in</link><language>en</language><lastBuildDate>Fri, 18 Dec 2020 13:41:50 +0100</lastBuildDate><pubDate>Fri, 18 Dec 2020 13:41:50 +0100</pubDate><ttl>250</ttl><atom:link href="https://paraside.in/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://paraside.in/design+code/system-test-withs-cuprite</guid><title>Replacing Selenium with Cuprite for Rails system tests</title><description>A quick-start guide for rspec-less system tests with Cuprite</description><link>https://paraside.in/design+code/system-test-withs-cuprite</link><pubDate>Fri, 18 Dec 2020 13:02:00 +0100</pubDate><content:encoded><![CDATA[<h1>Replacing Selenium with Cuprite for Rails system tests</h1><p>In the <a href="https://guides.rubyonrails.org/testing.html">world of tests</a>, system tests are as close to real users as it gets: you control a browser and make it use your app as you expect humans to.</p><p>To do so, you need two things:</p><ul><li><strong>a browser</strong>: you will see it (safari, chrome…) run on its own on your machine unless you set it to be "headless", a gory way to tell your machine that you actually don't want to see the insides of your tests</li><li><strong>a driver</strong>: the pilot that will take your test instructions and command the browser</li></ul><p>By default, Rails ships with Selenium, but there's a new kid in town: <a href="https://github.com/rubycdp/cuprite">Cuprite</a>, a "<em>Headless Chrome driver for Capybara</em>", which is faster and has some nice tricks up its sleeves like options to pause and debug.</p><p>I discovered cuprite thanks to Evil Martians blog post: "**<a href="https://evilmartians.com/chronicles/system-of-a-test-setting-up-end-to-end-rails-testing">System of a test:** Proper browser testing in Ruby on Rails</a>".</p><p>The following is just a quick-start version for those who don't care about docker or rspec, with some minor twists.</p><h1>Basic setup</h1><p>To get started, you simply need to add the cuprite gem. Selenium will have to stay unless you're <a href="https://github.com/rails/rails/pull/39179">on Rails 6.1</a>.</p><pre><code><div class="highlight"><span></span><span class="n">group</span> <span class="ss">:test</span> <span class="k">do</span>
+  <span class="n">gem</span> <span class="s1">&#39;capybara&#39;</span>
+  <span class="n">gem</span> <span class="s1">&#39;selenium-webdriver&#39;</span> <span class="c1"># Only for rails &lt;= 6.1</span>
+  <span class="n">gem</span> <span class="s1">&#39;cuprite&#39;</span>
+<span class="k">end</span>
+</div></code></pre><p>And then you can edit <code>test/application_system_test_case.rb</code></p><pre><code><div class="highlight"><span></span><span class="nb">require</span> <span class="s2">&quot;test_helper&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;capybara/cuprite&quot;</span> <span class="c1"># &lt;- Add this</span>
+
+<span class="k">class</span> <span class="nc">ApplicationSystemTestCase</span> <span class="o">&lt;</span> <span class="no">ActionDispatch</span><span class="o">::</span><span class="no">SystemTestCase</span>
+  <span class="c1"># And replace selenium with cuprite</span>
+  <span class="n">driven_by</span> <span class="ss">:cuprite</span><span class="p">,</span> <span class="ss">using</span><span class="p">:</span> <span class="ss">:chromium</span><span class="p">,</span> <span class="ss">screen_size</span><span class="p">:</span> <span class="o">[</span><span class="mi">1400</span><span class="p">,</span> <span class="mi">1400</span><span class="o">]</span>
+<span class="k">end</span>
+</div></code></pre><p>And with this you're good to go.</p><p>You'll notice that I'm not using <code>:chrome</code> but the open source browser it's based on: <a href="https://www.chromium.org/getting-involved/download-chromium">Chromium</a>. This is because I just uninstalled Chrome, because https://chromeisbad.com.</p><p><a href="https://twitter.com/sowenjub/status/1338958371844726784?s=20">https://twitter.com/sowenjub/status/1338958371844726784?s=20</a></p><h1>A more elaborate setup</h1><p>There are a couple more setup files I grabbed from <a href="https://evilmartians.com/chronicles/system-of-a-test-setting-up-end-to-end-rails-testing">Evil Martians' setup</a>, with a slightly different organisation since I'm not using rspec.</p><pre><code><div class="highlight"><span></span><span class="nb">test</span><span class="o">/</span>
+  <span class="n">test_helpers</span><span class="o">/</span>
+    <span class="nb">system</span><span class="o">/</span>
+      <span class="n">better_rails_system_tests</span><span class="o">.</span><span class="n">rb</span>
+      <span class="n">capybara_setup</span><span class="o">.</span><span class="n">rb</span>
+      <span class="n">cuprite_helpers</span><span class="o">.</span><span class="n">rb</span>
+      <span class="n">cuprite_setup</span><span class="o">.</span><span class="n">rb</span>
+</div></code></pre><p>And with this, <code>test/application_system_test_case.rb</code> will end up looking like this:</p><pre><code><div class="highlight"><span></span><span class="nb">require</span> <span class="s2">&quot;test_helper&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;test_helpers/system/better_rails_system_tests&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;test_helpers/system/capybara_setup&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;test_helpers/system/cuprite_helpers&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;test_helpers/system/cuprite_setup&quot;</span>
+
+<span class="k">class</span> <span class="nc">ApplicationSystemTestCase</span> <span class="o">&lt;</span> <span class="no">ActionDispatch</span><span class="o">::</span><span class="no">SystemTestCase</span>
+  <span class="n">driven_by</span> <span class="ss">:cuprite</span><span class="p">,</span> <span class="ss">using</span><span class="p">:</span> <span class="ss">:chromium</span><span class="p">,</span> <span class="ss">screen_size</span><span class="p">:</span> <span class="o">[</span><span class="mi">1400</span><span class="p">,</span> <span class="mi">1400</span><span class="o">]</span>
+
+  <span class="kp">include</span> <span class="no">BetterRailsSystemTests</span>
+  <span class="kp">include</span> <span class="no">CupriteHelpers</span>
+<span class="k">end</span>
+</div></code></pre><p>And of course you need to create the files, taken from Evil Martians.</p><pre><code><div class="highlight"><span></span><span class="c1"># test_helpers/system/better_rails_system_tests</span>
+
+<span class="k">module</span> <span class="nn">BetterRailsSystemTests</span>
+  <span class="c1"># Use our `Capybara.save_path` to store screenshots with other capybara artifacts</span>
+  <span class="c1"># (Rails screenshots path is not configurable https://github.com/rails/rails/blob/49baf092439fc74fc3377b12e3334c3dd9d0752f/actionpack/lib/action_dispatch/system_testing/test_helpers/screenshot_helper.rb#L79)</span>
+  <span class="k">def</span> <span class="nf">absolute_image_path</span>
+    <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">Capybara</span><span class="o">.</span><span class="n">save_path</span><span class="si">}</span><span class="s2">/screenshots/</span><span class="si">#{</span><span class="n">image_name</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Make failure screenshots compatible with multi-session setup.</span>
+  <span class="c1"># That&#39;s where we use Capybara.last_used_session introduced before.</span>
+  <span class="k">def</span> <span class="nf">take_screenshot</span>
+    <span class="k">return</span> <span class="k">super</span> <span class="k">unless</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">last_used_session</span>
+
+    <span class="no">Capybara</span><span class="o">.</span><span class="n">using_session</span><span class="p">(</span><span class="no">Capybara</span><span class="o">.</span><span class="n">last_used_session</span><span class="p">)</span> <span class="p">{</span> <span class="k">super</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</div></code></pre><pre><code><div class="highlight"><span></span><span class="c1"># test_helpers/system/capybara_setup</span>
+
+<span class="c1"># Usually, especially when using Selenium, developers tend to increase the max wait time.</span>
+<span class="c1"># With Cuprite, there is no need for that.</span>
+<span class="c1"># We use a Capybara default value here explicitly.</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">default_max_wait_time</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Normalize whitespaces when using `has_text?` and similar matchers,</span>
+<span class="c1"># i.e., ignore newlines, trailing spaces, etc.</span>
+<span class="c1"># That makes tests less dependent on slightly UI changes.</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">default_normalize_ws</span> <span class="o">=</span> <span class="kp">true</span>
+
+<span class="c1"># Where to store system tests artifacts (e.g. screenshots, downloaded files, etc.).</span>
+<span class="c1"># It could be useful to be able to configure this path from the outside (e.g., on CI).</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;CAPYBARA_ARTIFACTS&quot;</span><span class="p">,</span> <span class="s2">&quot;./tmp/capybara&quot;</span><span class="p">)</span>
+
+<span class="c1"># The Capybara.using_session allows you to manipulate a different browser session, and thus, multiple independent sessions within a single test scenario. That’s especially useful for testing real-time features, e.g., something with WebSocket.</span>
+<span class="c1"># This patch tracks the name of the last session used. We’re going to use this information to support taking failure screenshots in multi-session tests.</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">singleton_class</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="no">Module</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:last_used_session</span>
+
+  <span class="k">def</span> <span class="nf">using_session</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">last_used_session</span> <span class="o">=</span> <span class="nb">name</span>
+    <span class="k">super</span>
+  <span class="k">ensure</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">last_used_session</span> <span class="o">=</span> <span class="kp">nil</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="p">)</span>
+</div></code></pre><p>For this one I created a dedicated file but you could put it at the end of <code>cuprite_setup</code> as well.</p><pre><code><div class="highlight"><span></span><span class="c1"># test_helpers/system/cuprite_helpers</span>
+
+<span class="k">module</span> <span class="nn">CupriteHelpers</span>
+  <span class="c1"># Drop #pause anywhere in a test to stop the execution.</span>
+  <span class="c1"># Useful when you want to checkout the contents of a web page in the middle of a test</span>
+  <span class="c1"># running in a headful mode.</span>
+  <span class="k">def</span> <span class="nf">pause</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">pause</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Drop #debug anywhere in a test to open a Chrome inspector and pause the execution</span>
+  <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</div></code></pre><pre><code><div class="highlight"><span></span><span class="c1"># test_helpers/system/cuprite_setup</span>
+
+<span class="c1"># First, load Cuprite Capybara integration</span>
+<span class="nb">require</span> <span class="s2">&quot;capybara/cuprite&quot;</span>
+
+<span class="c1"># Then, we need to register our driver to be able to use it later</span>
+<span class="c1"># with #driven_by method.</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">register_driver</span><span class="p">(</span><span class="ss">:cuprite</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="no">Capybara</span><span class="o">::</span><span class="no">Cuprite</span><span class="o">::</span><span class="no">Driver</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+    <span class="n">app</span><span class="p">,</span>
+    <span class="o">**</span><span class="p">{</span>
+      <span class="ss">window_size</span><span class="p">:</span> <span class="o">[</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">800</span><span class="o">]</span><span class="p">,</span>
+      <span class="c1"># See additional options for Dockerized environment in the respective section of this article</span>
+      <span class="ss">browser_options</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="c1"># Increase Chrome startup wait time (required for stable CI builds)</span>
+      <span class="ss">process_timeout</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="c1"># Enable debugging capabilities</span>
+      <span class="ss">inspector</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+      <span class="c1"># Allow running Chrome in a headful mode by setting HEADLESS env</span>
+      <span class="c1"># var to a falsey value</span>
+      <span class="ss">headless</span><span class="p">:</span> <span class="o">!</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;HEADLESS&quot;</span><span class="o">].</span><span class="n">in?</span><span class="p">(</span><span class="sx">%w[n 0 no false]</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># Configure Capybara to use :cuprite driver by default</span>
+<span class="no">Capybara</span><span class="o">.</span><span class="n">default_driver</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">.</span><span class="n">javascript_driver</span> <span class="o">=</span> <span class="ss">:cuprite</span> 
+</div></code></pre><p>And now we just have to write a simple test:</p><pre><code><div class="highlight"><span></span><span class="nb">require</span> <span class="s2">&quot;application_system_test_case&quot;</span>
+
+<span class="k">class</span> <span class="nc">HomeTest</span> <span class="o">&lt;</span> <span class="no">ApplicationSystemTestCase</span>
+  <span class="nb">test</span> <span class="s2">&quot;open home screen&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="n">root_url</span>
+    <span class="n">save_and_open_page</span> <span class="c1"># Will save the html page in /tmp/capybara and open it in your default browser</span>
+    <span class="n">take_screenshot</span> <span class="c1"># Will save a screenshot in /tmp/capybara/screenshots</span>
+    <span class="n">pause</span> <span class="c1"># To see the current view, requires HEADLESS=0 (or n, no, false)</span>
+    <span class="n">debug</span><span class="p">()</span> <span class="c1"># To see the current view with debug tools</span>
+    <span class="n">assert_selector</span> <span class="s2">&quot;h1&quot;</span><span class="p">,</span> <span class="ss">text</span><span class="p">:</span> <span class="s2">&quot;Hello, world&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</div></code></pre><p>To launch it, run the following:</p><pre><code><div class="highlight"><span></span><span class="c1"># If you want to see the browser or use `pause`</span>
+<span class="no">HEADLESS</span><span class="o">=</span><span class="mi">0</span> <span class="n">rails</span> <span class="nb">test</span> <span class="nb">test</span><span class="o">/</span><span class="nb">system</span><span class="o">/</span><span class="n">home_test</span><span class="o">.</span><span class="n">rb</span>
+
+<span class="c1"># Otherwise this will do</span>
+<span class="n">rails</span> <span class="nb">test</span> <span class="nb">test</span><span class="o">/</span><span class="nb">system</span><span class="o">/</span><span class="n">home_test</span><span class="o">.</span><span class="n">rb</span>
+</div></code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://paraside.in/design+code/trix-stimulus-auto-link-url</guid><title>Auto-linking URLs with Trix Editor and StimulusJS</title><description>Auto-linking URLs with Trix Editor and StimulusJS</description><link>https://paraside.in/design+code/trix-stimulus-auto-link-url</link><pubDate>Tue, 20 Oct 2020 10:25:00 +0200</pubDate><content:encoded><![CDATA[<p>The <a href="https://trix-editor.org/">https://trix-editor.org</a> is fantastic, but there's one simple thing I expected to be built-in that isn't: copy/pasting a URL should create a link automatically instead of inserting the link as plain text.</p><p>Thinking of it, it's not so surprising because there are many things one could want to do instead, like embedding a video or a tweet. But it's a <a href="https://github.com/basecamp/trix/issues/167">common request</a>, and the GitHub issue includes a solution with jQuery that I used to build my Stimulus controller.</p><p>So, without further ado, here's a simple 2 steps rails tutorial to add URL auto-linking to your forms.</p><h1>The controller</h1><p>Create a <code>/app/javascript/controller/trix_paste_controller.js</code> file and copy/paste the code below.</p><pre><code><div class="highlight"><span></span><span class="kd">import</span> <span class="p">{</span> <span class="nc">Controller</span> <span class="p">}</span> <span class="nc">from</span> <span class="s">&quot;stimulus&quot;</span>
 
 <span class="n">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nc">extends</span> <span class="n">Controller</span> <span class="p">{</span>
   <span class="n">connect</span><span class="p">()</span> <span class="p">{</span>
